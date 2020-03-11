@@ -16,7 +16,7 @@ where
     let mut lookup = HashMap::new();
 
     for (key, val) in iter {
-        lookup.entry(key).or_insert(Vec::new()).push(val);
+        lookup.entry(key).or_insert_with(Vec::new).push(val);
     }
 
     lookup

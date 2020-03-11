@@ -25,5 +25,5 @@ where
             a.extend(b);
             a
         })
-        .unwrap_or_else(|| <_>::default())
+        .unwrap_or_default()
 }

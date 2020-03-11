@@ -660,7 +660,7 @@ pub trait Itertools: Iterator {
     /// let it = (0..8).step(3);
     /// itertools::assert_equal(it, vec![0, 3, 6]);
     /// ```
-    #[deprecated(note = "Use std .step_by() instead", since = "0.8")]
+    #[deprecated(note = "Use std .step_by() instead", since = "0.8.0")]
     #[allow(deprecated)]
     fn step(self, n: usize) -> Step<Self>
     where
@@ -1412,12 +1412,10 @@ pub trait Itertools: Iterator {
     where
         P: FnMut(&Self::Item) -> bool,
     {
-        let mut index = 0usize;
-        for elt in self {
+        for (index, elt) in self.enumerate() {
             if pred(&elt) {
                 return Some((index, elt));
             }
-            index += 1;
         }
         None
     }
@@ -1517,7 +1515,7 @@ pub trait Itertools: Iterator {
     ///
     /// itertools::assert_equal(rx.iter(), vec![1, 3, 5, 7, 9]);
     /// ```
-    #[deprecated(note = "Use .for_each() instead", since = "0.8")]
+    #[deprecated(note = "Use .for_each() instead", since = "0.8.0")]
     fn foreach<F>(self, f: F)
     where
         F: FnMut(Self::Item),
@@ -1971,14 +1969,14 @@ pub trait Itertools: Iterator {
     /// The big difference between the computations of `result2` and `result3` is that while
     /// `fold()` called the provided closure for every item of the callee iterator,
     /// `fold_while()` actually stopped iterating as soon as it encountered `Fold::Done(_)`.
-    #[deprecated(note = "Use .try_fold() instead", since = "0.8")]
+    #[deprecated(note = "Use .try_fold() instead", since = "0.8.0")]
     fn fold_while<B, F>(&mut self, init: B, mut f: F) -> FoldWhile<B>
     where
         Self: Sized,
         F: FnMut(B, Self::Item) -> FoldWhile<B>,
     {
         let mut acc = init;
-        while let Some(item) = self.next() {
+        for item in self {
             match f(acc, item) {
                 FoldWhile::Continue(res) => acc = res,
                 res @ FoldWhile::Done(_) => return res,

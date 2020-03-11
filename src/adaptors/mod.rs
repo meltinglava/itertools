@@ -438,7 +438,7 @@ where
 /// then skipping forward *n-1* elements.
 ///
 /// See [`.step()`](../trait.Itertools.html#method.step) for more information.
-#[deprecated(note = "Use std .step_by() instead", since = "0.8")]
+#[deprecated(note = "Use std .step_by() instead", since = "0.8.0")]
 #[allow(deprecated)]
 #[derive(Clone, Debug)]
 #[must_use = "iterator adaptors are lazy and do nothing unless consumed"]
@@ -817,7 +817,7 @@ where
     type Item = I::Item;
 
     fn next(&mut self) -> Option<I::Item> {
-        let ref mut dedup_pred = self.dedup_pred;
+        let dedup_pred = &mut self.dedup_pred;
         self.iter.next_with(|x, y| {
             if dedup_pred.dedup_pair(&x, &y) {
                 Ok(x)

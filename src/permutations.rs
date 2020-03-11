@@ -98,16 +98,16 @@ where
             ref state,
         } = self;
 
-        match state {
-            &PermutationState::StartUnknownLen { .. } => panic!("unexpected iterator state"),
-            &PermutationState::OngoingUnknownLen { k, min_n } => {
+        match *state {
+            PermutationState::StartUnknownLen { .. } => panic!("unexpected iterator state"),
+            PermutationState::OngoingUnknownLen { k, min_n } => {
                 let latest_idx = min_n - 1;
                 let indices = (0..(k - 1)).chain(once(latest_idx));
 
                 Some(indices.map(|i| vals[i].clone()).collect())
             }
-            &PermutationState::Complete(CompleteState::Start { .. }) => None,
-            &PermutationState::Complete(CompleteState::Ongoing {
+            PermutationState::Complete(CompleteState::Start { .. }) => None,
+            PermutationState::Complete(CompleteState::Ongoing {
                 ref indices,
                 ref cycles,
             }) => {
@@ -115,7 +115,7 @@ where
 
                 Some(indices[0..k].iter().map(|&i| vals[i].clone()).collect())
             }
-            &PermutationState::Empty => None,
+            PermutationState::Empty => None,
         }
     }
 
@@ -174,11 +174,11 @@ where
             ref mut state,
         } = self;
 
-        *state = match state {
-            &mut PermutationState::StartUnknownLen { k } => {
+        *state = match *state {
+            PermutationState::StartUnknownLen { k } => {
                 PermutationState::OngoingUnknownLen { k, min_n: k }
             }
-            &mut PermutationState::OngoingUnknownLen { k, min_n } => {
+            PermutationState::OngoingUnknownLen { k, min_n } => {
                 if vals.get_next() {
                     PermutationState::OngoingUnknownLen {
                         k,
@@ -197,12 +197,12 @@ where
                     PermutationState::Complete(complete_state)
                 }
             }
-            &mut PermutationState::Complete(ref mut state) => {
+            PermutationState::Complete(ref mut state) => {
                 state.advance();
 
                 return;
             }
-            &mut PermutationState::Empty => {
+            PermutationState::Empty => {
                 return;
             }
         };
@@ -211,14 +211,14 @@ where
 
 impl CompleteState {
     fn advance(&mut self) {
-        *self = match self {
-            &mut CompleteState::Start { n, k } => {
+        *self = match *self {
+            CompleteState::Start { n, k } => {
                 let indices = (0..n).collect();
                 let cycles = ((n - k)..n).rev().collect();
 
                 CompleteState::Ongoing { cycles, indices }
             }
-            &mut CompleteState::Ongoing {
+            CompleteState::Ongoing {
                 ref mut indices,
                 ref mut cycles,
             } => {
@@ -248,8 +248,8 @@ impl CompleteState {
     fn remaining(&self) -> CompleteStateRemaining {
         use self::CompleteStateRemaining::{Known, Overflow};
 
-        match self {
-            &CompleteState::Start { n, k } => {
+        match *self {
+            CompleteState::Start { n, k } => {
                 if n < k {
                     return Known(0);
                 }
@@ -262,7 +262,7 @@ impl CompleteState {
                     None => Overflow,
                 }
             }
-            &CompleteState::Ongoing {
+            CompleteState::Ongoing {
                 ref indices,
                 ref cycles,
             } => {

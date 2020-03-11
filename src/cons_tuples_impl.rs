@@ -62,7 +62,5 @@ pub fn cons_tuples<I, J>(iterable: I) -> ConsTuples<I, J>
 where
     I: Iterator<Item = J>,
 {
-    ConsTuples {
-        iter: iterable.into_iter(),
-    }
+    ConsTuples { iter: iterable }
 }

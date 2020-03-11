@@ -76,8 +76,7 @@ where
 
         self.iter.fold(accum, |accum, x| {
             let accum = f(accum, element.clone());
-            let accum = f(accum, x);
-            accum
+            f(accum, x)
         })
     }
 }

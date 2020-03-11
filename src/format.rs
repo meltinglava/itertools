@@ -28,7 +28,7 @@ pub struct Format<'a, I> {
     inner: RefCell<Option<I>>,
 }
 
-pub fn new_format<'a, I, F>(iter: I, separator: &'a str, f: F) -> FormatWith<'a, I, F>
+pub fn new_format<I, F>(iter: I, separator: &str, f: F) -> FormatWith<I, F>
 where
     I: Iterator,
     F: FnMut(I::Item, &mut dyn FnMut(&dyn fmt::Display) -> fmt::Result) -> fmt::Result,
@@ -39,7 +39,7 @@ where
     }
 }
 
-pub fn new_format_default<'a, I>(iter: I, separator: &'a str) -> Format<'a, I>
+pub fn new_format_default<I>(iter: I, separator: &str) -> Format<I>
 where
     I: Iterator,
 {
@@ -63,7 +63,7 @@ where
         if let Some(fst) = iter.next() {
             format(fst, &mut |disp: &dyn fmt::Display| disp.fmt(f))?;
             for elt in iter {
-                if self.sep.len() > 0 {
+                if !self.sep.is_empty() {
                     f.write_str(self.sep)?;
                 }
                 format(elt, &mut |disp: &dyn fmt::Display| disp.fmt(f))?;
@@ -89,7 +89,7 @@ where
         if let Some(fst) = iter.next() {
             cb(&fst, f)?;
             for elt in iter {
-                if self.sep.len() > 0 {
+                if !self.sep.is_empty() {
                     f.write_str(self.sep)?;
                 }
                 cb(&elt, f)?;
